@@ -14,6 +14,7 @@ class UsersController extends AppController
 
     public function login()
     {
+        $this->Authorization->skipAuthorization();
         $this->request->allowMethod(['get', 'post']);
         $result = $this->Authentication->getResult();
 
@@ -27,6 +28,31 @@ class UsersController extends AppController
         }
     }
 
+    public function register()
+    {
+        $this->Authorization->skipAuthorization(); // accès libre
+
+        $user = $this->Users->newEmptyEntity();
+
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+
+            // Rôle par défaut
+            $data['role'] = 'user';
+
+            $user = $this->Users->patchEntity($user, $data);
+
+            if ($this->Users->save($user)) {
+                $this->Flash->success("Compte créé avec succès, tu peux maintenant te connecter.");
+                return $this->redirect(['action' => 'login']);
+            }
+
+            $this->Flash->error("Impossible de créer le compte.");
+            debug($user->getErrors());
+        }
+
+        $this->set(compact('user'));
+    }
 
 
 
@@ -137,7 +163,7 @@ class UsersController extends AppController
 
     public function logout()
     {
-
+        $this->Authorization->skipAuthorization();
         $result = $this->Authentication->getResult();
 
         if ($result && $result->isValid()) {

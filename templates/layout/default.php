@@ -1,36 +1,24 @@
 <?php
 
 /**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * Spotiflow : Plateforme de gestion musicale
  * @var \App\View\AppView $this
  */
-
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$appName = 'Spotiflow';
+$identity = $this->request->getAttribute('identity');
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <?= $cakeDescription ?>:
-        <?= $this->fetch('title') ?>
+        <?= h($appName) ?> : <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('icon') ?>
 
     <?= $this->Html->css(['normalize.min', 'milligram.min', 'fonts', 'cake']) ?>
-
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
@@ -39,30 +27,48 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Spo</span>Timfy</a>
+            <a href="<?= $this->Url->build(['controller' => 'Artists', 'action' => 'index']) ?>">
+                <span>Spo</span><span>Timfy</span>
+            </a>
         </div>
+
         <div class="top-nav-links">
-            <?php if (!$this->request->getAttribute('identity')): ?>
-                <?= $this->Html->link('Créer un compte', ['controller' => 'Users', 'action' => 'add']) ?>
-                <?= $this->Html->link('Se Connecter', ['controller' => 'Users', 'action' => 'login']) ?>
+            <?php if ($identity): ?>
+                <span style="margin-right: 15px;">
+                    🙋 Connecté en tant que <strong><?= h($identity->get('username')) ?></strong>
+                </span>
+                <?= $this->Html->link('🚪 Déconnexion', ['controller' => 'Users', 'action' => 'logout']) ?>
+
+                <?php if ($identity->get('role') === 'user'): ?>
+                    |
+                    <?= $this->Html->link('📬 Mes demandes', ['controller' => 'Requests', 'action' => 'myRequests']) ?>
+                    |
+                    <?= $this->Html->link('➕ Ajouter une demande', ['controller' => 'Requests', 'action' => 'add']) ?>
+                <?php endif; ?>
+
+                <?php if ($identity->get('role') === 'admin'): ?>
+                    |
+                    <?= $this->Html->link('🛠️ Gérer les demandes', ['controller' => 'Requests', 'action' => 'index']) ?>
+                <?php endif; ?>
+
+                |
+                <?= $this->Html->link('📈 Statistiques', ['controller' => 'Stats', 'action' => 'index']) ?>
             <?php else: ?>
-                <div class="my-trips-link">
-                    <?= $this->Html->link(__('Artists'), ['controller' => 'Artists', 'action' => 'index']) ?>
-                </div>
-                <?= $this->Html->link('Se Déconnecter', ['controller' => 'Users', 'action' => 'logout']) ?>
+                <?= $this->Html->link('🔐 Connexion', ['controller' => 'Users', 'action' => 'login']) ?>
+                |
+                <?= $this->Html->link('📝 Inscription', ['controller' => 'Users', 'action' => 'register']) ?>
             <?php endif; ?>
         </div>
-
     </nav>
+
     <main class="main">
-
-
         <div class="container">
             <?= $this->Flash->render() ?>
             <?= $this->fetch('content') ?>
         </div>
     </main>
-    <footer>
-    </footer>
+
+    <footer></footer>
 </body>
+
 </html>

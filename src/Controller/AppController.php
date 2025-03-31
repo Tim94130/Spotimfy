@@ -18,7 +18,6 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 
-
 /**
  * Application Controller
  *
@@ -44,21 +43,26 @@ class AppController extends Controller
 
         $this->loadComponent('Flash');
 
-        $this->loadComponent('Authentication.Authentication');
-
         /*
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/5/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
+        $this->loadComponent('Authentication.Authentication');
+        $this->loadComponent('Authorization.Authorization');
+
+
     }
 
 
-
-    public function beforeFilter(\Cake\Event\EventInterface $event){
-
-        parent::beforeFilter($event);
-
-        $this->Authentication->addUnauthenticatedActions(['login', 'add']);
-    }
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+{
+    parent::beforeFilter($event);
+    // pour tous les contrôleurs de notre application, rendre les actions
+    // index et view publiques, en ignorant la vérification d'authentification
+    $this->Authentication->addUnauthenticatedActions([
+        'index', 'view', 'login', 'register', 'add'
+    ]);
+    
+}
 }

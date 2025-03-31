@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -17,6 +18,8 @@ class ArtistsController extends AppController
      */
     public function index()
     {
+        $this->Authorization->skipAuthorization();
+
         $artists = $this->Artists->find('all', [
             'contain' => ['Albums']
         ]);
@@ -32,9 +35,16 @@ class ArtistsController extends AppController
      */
     public function view($id = null)
     {
-        $artist = $this->Artists->get($id, contain: ['Albums', 'Favorites']);
+        $artist = $this->Artists->get($id, [
+            'contain' => ['Albums', 'Favorites'],
+        ]);
+
+        $this->Authorization->authorize($artist);
+
         $this->set(compact('artist'));
     }
+
+
 
     /**
      * Add method
@@ -43,6 +53,8 @@ class ArtistsController extends AppController
      */
     public function add()
     {
+
+
         $artist = $this->Artists->newEmptyEntity();
         if ($this->request->is('post')) {
             $artist = $this->Artists->patchEntity($artist, $this->request->getData());

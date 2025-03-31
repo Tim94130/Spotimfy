@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Table;
@@ -86,5 +87,12 @@ class UsersTable extends Table
         ]);
 
         return $rules;
+    }
+    protected function _setPassword(string $password): ?string
+    {
+        if (strlen($password)) {
+            return (new \Authentication\PasswordHasher\DefaultPasswordHasher())->hash($password);
+        }
+        return null;
     }
 }
